@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Suraj's Portfolio</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="cosmic-nav">
+        <a href="index.html" class="logo">Suraj</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="projects.html">Projects</a>
+            <a href="tools.html">Tools</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <div class="hamburger">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+    </nav>
+
+    <!-- Projects Section -->
+    <section class="projects-section">
+        <div class="projects-container">
+            <h1 class="section-heading">My Projects</h1>
+
+            <!-- Angular & Ionic Projects -->
+            <div class="project-category">
+                <div class="category-heading">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h2>Angular & Ionic Projects</h2>
+                </div>
+                <div class="projects-grid">
+                    <div class="project-card">
+                        <h3 class="project-title">Calculator</h3>
+                        <div class="screenshot-preview">
+                            <img src="assets/images/calculator/1.jpeg" alt="Calculator Screenshot 1">
+                            <img src="assets/images/calculator/2.jpeg" alt="Calculator Screenshot 2">
+                            <button class="view-more-btn" onclick="openGallery('calculator')">View More</button>
+                        </div>
+                        <p class="project-description">Basic calculator with user-friendly UI built using Angular and Ionic.</p>
+                        <a href="assets/downloads/Calculator.apk" class="project-link" download>
+                            <i class="fas fa-download"></i>
+                            <span>Download APK</span>
+                        </a>
+                    </div>
+                    <div class="project-card">
+                        <h3 class="project-title">Car's Collection</h3>
+                        <div class="screenshot-preview">
+                            <img src="assets/images/cars/1.jpeg" alt="Cars App Screenshot 1">
+                            <img src="assets/images/cars/2.jpeg" alt="Cars App Screenshot 2">
+                            <button class="view-more-btn" onclick="openGallery('cars')">View More</button>
+                        </div>
+                        <p class="project-description">A showcase app displaying car details in a stylish format.</p>
+                        <a href="assets/downloads/cars.apk" class="project-link" download>
+                            <i class="fas fa-download"></i>
+                            <span>Download APK</span>
+                        </a>
+                    </div>
+                    <div class="project-card">
+                        <h3 class="project-title">Jira Tracker</h3>
+                        <div class="screenshot-preview">
+                            <img src="assets/images/jira/1.jpeg" alt="Jira App Screenshot 1">
+                            <img src="assets/images/jira/2.jpeg" alt="Jira App Screenshot 2">
+                            <button class="view-more-btn" onclick="openGallery('jira')">View More</button>
+                        </div>
+                        <p class="project-description">Basic task management app with backend support.</p>
+                        <a href="assets/downloads/Jira.apk" class="project-link" download>
+                            <i class="fas fa-download"></i>
+                            <span>Download APK</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Web Projects -->
+            <div class="project-category">
+                <div class="category-heading">
+                    <i class="fas fa-laptop-code"></i>
+                    <h2>Web Projects</h2>
+                </div>
+                <div class="projects-grid">
+                    <div class="project-card">
+                        <h3 class="project-title">Portfolio</h3>
+                        <p class="project-description">My personal developer portfolio showcasing my work and skills.</p>
+                    </div>
+                    <div class="project-card">
+                        <h3 class="project-title">Professional Tile Fitting Website</h3>
+                        <p class="project-description">A business website for tile fitting services with modern design.</p>
+                    </div>
+                    <div class="project-card">
+                        <h3 class="project-title">SustainEats</h3>
+                        <p class="project-description">A sustainability-focused food app prototype promoting eco-friendly dining.</p>
+                    </div>
+                    <div class="project-card">
+                        <h3 class="project-title">Happening At</h3>
+                        <p class="project-description">An event listing and discovery platform for local events.</p>
+                    </div>
+                    <div class="project-card">
+                        <h3 class="project-title">Online Voting System</h3>
+                        <p class="project-description">A secure platform for conducting online voting processes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Python Projects -->
+            <div class="project-category">
+                <div class="category-heading">
+                    <i class="fab fa-python"></i>
+                    <h2>Python Projects</h2>
+                </div>
+                <div class="projects-grid">
+                    <div class="project-card">
+                        <h3 class="project-title">Sentiment Analyzer</h3>
+                        <p class="project-description">Analyzes the sentiment of user input (positive/negative/neutral).</p>
+                    </div>
+                    <div class="project-card">
+                        <h3 class="project-title">Open Port Scanner</h3>
+                        <p class="project-description">Scans and lists open ports of a target machine.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deployed Projects -->
+            <div class="project-category">
+                <div class="category-heading">
+                    <i class="fas fa-rocket"></i>
+                    <h2>Deployed Projects</h2>
+                </div>
+                <div class="deployed-projects">
+                    <a href="https://happeningat.com/" class="deployed-link" target="_blank">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Nass Technologies: HappeningAt - Event Management Platform (Internship Project)</span>
+                    </a>
+                    <a href="https://ghanshyam-rho.vercel.app/" class="deployed-link" target="_blank">
+                        <i class="fas fa-external-link-alt"></i>
+                        <span>Professional Tile Fitting Website</span>
+                    </a>
+                    <a href="https://resume-builder-4h7k.vercel.app/" class="deployed-link" target="_blank">
+                        <i class="fas fa-external-link-alt"></i>
+                        <span>Resume Builder</span>
+                    </a>
+                    <a href="https://jira-tracker-backend.onrender.com/" class="deployed-link" target="_blank">
+                        <i class="fas fa-server"></i>
+                        <span>Jira Tracker Backend</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- More Projects -->
+            <div class="project-category">
+                <div class="category-heading">
+                    <i class="fab fa-github"></i>
+                    <h2>More Projects</h2>
+                </div>
+                <div class="deployed-projects">
+                    <a href="https://github.com/surajorg0" class="deployed-link" target="_blank">
+                        <i class="fab fa-github"></i>
+                        <span>Visit my GitHub Profile</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="cosmic-footer">
+        <div class="footer-content">
+            <p>&copy; 2025 Suraj. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Gallery Modal -->
+    <div id="galleryModal" class="gallery-modal">
+        <span class="gallery-close" onclick="closeGallery()">&times;</span>
+        <div class="gallery-content">
+            <div id="galleryImages" class="gallery-images"></div>
+        </div>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        function openGallery(appType) {
+            const modal = document.getElementById('galleryModal');
+            const galleryImages = document.getElementById('galleryImages');
+            galleryImages.innerHTML = '';
+            
+            let imageCount;
+            switch(appType) {
+                case 'calculator':
+                    imageCount = 4;
+                    break;
+                case 'cars':
+                    imageCount = 6;
+                    break;
+                case 'jira':
+                    imageCount = 8;
+                    break;
+            }
+
+            for(let i = 1; i <= imageCount; i++) {
+                const img = document.createElement('img');
+                img.src = `assets/images/${appType}/${i}.jpeg`;
+                img.alt = `${appType} Screenshot ${i}`;
+                galleryImages.appendChild(img);
+            }
+
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeGallery() {
+            const modal = document.getElementById('galleryModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close gallery when clicking outside of images
+        window.onclick = function(event) {
+            const modal = document.getElementById('galleryModal');
+            if (event.target == modal) {
+                closeGallery();
+            }
+        }
+    </script>
+</body>
+</html> 
