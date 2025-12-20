@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize GSAP ScrollTrigger
-    gsap.registerPlugin(ScrollTrigger);
+    const hasGSAP = typeof window.gsap !== 'undefined';
+    const hasScrollTrigger = typeof window.ScrollTrigger !== 'undefined';
+    if (hasGSAP && hasScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+    }
     
     // Add cursor trail effect
     const cursorTrail = document.createElement('div');
@@ -74,53 +77,108 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Animate the milestones on scroll
     const milestones = document.querySelectorAll('.milestone');
-    milestones.forEach((milestone, index) => {
-        gsap.to(milestone, {
-            scrollTrigger: {
-                trigger: milestone,
-                start: "top 80%",
-                end: "bottom 20%",
-                toggleClass: "visible",
-                once: true
-            }
+    if (hasGSAP) {
+        milestones.forEach((milestone) => {
+            gsap.to(milestone, {
+                scrollTrigger: {
+                    trigger: milestone,
+                    start: "top 80%",
+                    end: "bottom 20%",
+                    toggleClass: "visible",
+                    once: true
+                }
+            });
         });
-    });
+    } else {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { rootMargin: "0px 0px -20% 0px" });
+        milestones.forEach((m) => observer.observe(m));
+    }
     
     // Typewriter effect for the tagline
     const typewriterElement = document.getElementById('typewriter');
-    const typewriterText = typewriterElement.textContent;
-    typewriterElement.textContent = '';
-    
-    let i = 0;
-    const typeSpeed = 100; // typing speed in milliseconds
-    
-    function typeWriter() {
-        if (i < typewriterText.length) {
-            typewriterElement.textContent += typewriterText.charAt(i);
-            i++;
-            setTimeout(typeWriter, typeSpeed);
+    if (typewriterElement) {
+        const typewriterText = typewriterElement.textContent;
+        typewriterElement.textContent = '';
+        
+        let i = 0;
+        const typeSpeed = 100; // typing speed in milliseconds
+        
+        function typeWriter() {
+            if (i < typewriterText.length) {
+                typewriterElement.textContent += typewriterText.charAt(i);
+                i++;
+                setTimeout(typeWriter, typeSpeed);
+            }
         }
+        
+        // Start the typewriter effect after a short delay
+        setTimeout(typeWriter, 1000);
     }
     
-    // Start the typewriter effect after a short delay
-    setTimeout(typeWriter, 1000);
-    
-    // Mobile menu toggle
+    // Mobile menu toggle with overlay, ESC, and close button
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
-    
-    hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        navLinks.classList.toggle('active');
-    });
-    
-    // Close mobile menu when clicking a nav link
-    document.querySelectorAll('.nav-links a').forEach(link => {
-        link.addEventListener('click', () => {
-            hamburger.classList.remove('active');
-            navLinks.classList.remove('active');
+
+    // Ensure a single overlay exists
+    let overlay = document.querySelector('.nav-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'nav-overlay';
+        document.body.appendChild(overlay);
+    }
+
+    function openMenu() {
+        if (hamburger) hamburger.classList.add('active');
+        if (navLinks) navLinks.classList.add('active');
+        document.body.classList.add('menu-open');
+    }
+
+    function closeMenu() {
+        if (hamburger) hamburger.classList.remove('active');
+        if (navLinks) navLinks.classList.remove('active');
+        document.body.classList.remove('menu-open');
+    }
+
+    if (hamburger && navLinks) {
+        // Toggle menu
+        hamburger.addEventListener('click', () => {
+            const isOpen = document.body.classList.contains('menu-open');
+            if (isOpen) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
         });
-    });
+
+        // Inject a close button into the nav if missing
+        let navClose = navLinks.querySelector('.nav-close');
+        if (!navClose) {
+            navClose = document.createElement('button');
+            navClose.className = 'nav-close';
+            navClose.type = 'button';
+            navClose.innerHTML = '&times;';
+            navLinks.insertBefore(navClose, navLinks.firstChild);
+        }
+
+        // Close on overlay click
+        overlay.addEventListener('click', closeMenu);
+        // Close on close button click
+        navClose.addEventListener('click', closeMenu);
+        // Close on ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeMenu();
+        });
+        // Close when clicking any nav link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+    }
     
     // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -141,28 +199,57 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add floating effect to project cards
     const projectCards = document.querySelectorAll('.project-card');
-    projectCards.forEach((card, index) => {
-        gsap.to(card, {
-            y: -10,
-            duration: 2,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut",
-            delay: index * 0.2
+    if (hasGSAP) {
+        projectCards.forEach((card, index) => {
+            gsap.to(card, {
+                y: -10,
+                duration: 2,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut",
+                delay: index * 0.2
+            });
         });
-    });
+    }
     
     // Add glowing effect to CTA button
     const ctaButton = document.querySelector('.cta-button');
-    gsap.to(ctaButton, {
-        boxShadow: '0 0 20px #8a2be2, 0 0 40px #8a2be2',
-        repeat: -1,
-        yoyo: true,
-        duration: 2
-    });
+    if (hasGSAP && ctaButton) {
+        gsap.to(ctaButton, {
+            boxShadow: '0 0 20px #8a2be2, 0 0 40px #8a2be2',
+            repeat: -1,
+            yoyo: true,
+            duration: 2
+        });
+    }
     
     // Create meteor animations
-    createMeteors();
+    if (!document.body.classList.contains('home')) { createMeteors(); }
+    
+    // Initialize particles.js if container is present
+    if (document.querySelector('#particles-js')) {
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 50, density: { enable: true, value_area: 800 } },
+                color: { value: "#ffffff" },
+                shape: { type: "circle" },
+                opacity: { value: 0.3, random: false },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: "#ffffff", opacity: 0.2, width: 1 },
+                move: { enable: true, speed: 2, direction: "none", random: false, straight: false, out_mode: "out", bounce: false }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: false }, resize: true }
+            },
+            retina_detect: true
+        });
+    }
+    
+    // Initialize tools if on tools page
+    if (document.querySelector('.tools-section')) {
+        initializeTools();
+    }
     
     // Handle contact form submission (client-side only)
     const contactForm = document.getElementById('contactForm');
@@ -189,6 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add cosmic floating elements randomly
     function createMeteors() {
+        if (!hasGSAP) { return; }
         const sections = document.querySelectorAll('section');
         
         sections.forEach(section => {
@@ -235,121 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Mobile Navigation
-document.addEventListener('DOMContentLoaded', () => {
-    const hamburger = document.querySelector('.hamburger');
-    const navLinks = document.querySelector('.nav-links');
 
-    hamburger?.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        navLinks?.classList.toggle('active');
-    });
-
-    // Close mobile menu when clicking a link
-    document.querySelectorAll('.nav-links a').forEach(link => {
-        link.addEventListener('click', () => {
-            hamburger?.classList.remove('active');
-            navLinks?.classList.remove('active');
-        });
-    });
-
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
-
-    // Initialize particles.js if on home page
-    if (document.querySelector('#particles-js')) {
-        particlesJS('particles-js', {
-            particles: {
-                number: {
-                    value: 50,
-                    density: {
-                        enable: true,
-                        value_area: 800
-                    }
-                },
-                color: {
-                    value: '#ffffff'
-                },
-                shape: {
-                    type: 'circle'
-                },
-                opacity: {
-                    value: 0.3,
-                    random: false
-                },
-                size: {
-                    value: 3,
-                    random: true
-                },
-                line_linked: {
-                    enable: true,
-                    distance: 150,
-                    color: '#ffffff',
-                    opacity: 0.2,
-                    width: 1
-                },
-                move: {
-                    enable: true,
-                    speed: 2,
-                    direction: 'none',
-                    random: false,
-                    straight: false,
-                    out_mode: 'out',
-                    bounce: false
-                }
-            },
-            interactivity: {
-                detect_on: 'canvas',
-                events: {
-                    onhover: {
-                        enable: true,
-                        mode: 'grab'
-                    },
-                    onclick: {
-                        enable: false
-                    },
-                    resize: true
-                }
-            },
-            retina_detect: true
-        });
-    }
-
-    // Handle contact form submission
-    const contactForm = document.getElementById('contactForm');
-    if (contactForm) {
-        contactForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(contactForm);
-            const data = Object.fromEntries(formData.entries());
-
-            try {
-                // Here you would typically send the data to your backend
-                console.log('Form submitted:', data);
-                alert('Message sent successfully!');
-                contactForm.reset();
-            } catch (error) {
-                console.error('Error sending message:', error);
-                alert('Error sending message. Please try again.');
-            }
-        });
-    }
-
-    // Initialize tools if on tools page
-    if (document.querySelector('.tools-section')) {
-        initializeTools();
-    }
-});
 
 // Tools initialization
 function initializeTools() {
@@ -444,4 +418,4 @@ function generatePassword(length, useUppercase, useNumbers, useSymbols) {
     }
 
     return password;
-} 
+}
