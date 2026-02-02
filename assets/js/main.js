@@ -1,39 +1,244 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const hasGSAP = typeof window.gsap !== 'undefined';
     const hasScrollTrigger = typeof window.ScrollTrigger !== 'undefined';
     if (hasGSAP && hasScrollTrigger) {
         gsap.registerPlugin(ScrollTrigger);
     }
-    
+
+    // Rocket Cursor Implementation - Optimized for instant response
+    const rocket = document.createElement('div');
+    rocket.className = 'rocket-cursor';
+    rocket.innerHTML = '<img src="assets/images/rocket-cursor.svg" alt="cursor">';
+    document.body.appendChild(rocket);
+
+    let mouseX = 0, mouseY = 0;
+    let lastX = 0, lastY = 0;
+    let velocityX = 0, velocityY = 0;
+    let currentAngle = 0;
+    const rotationSmoothing = 0.15; // Only smooth rotation, not position
+
+    let isMoving = false;
+    let movementTimeout = null;
+
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        // Track movement
+        isMoving = true;
+        clearTimeout(movementTimeout);
+        movementTimeout = setTimeout(() => {
+            isMoving = false;
+        }, 100);
+    });
+
+    function animateRocket() {
+        // Calculate velocity for rotation (before updating position)
+        velocityX = mouseX - lastX;
+        velocityY = mouseY - lastY;
+
+        // Calculate target rotation angle
+        const targetAngle = Math.atan2(velocityY, velocityX) * (180 / Math.PI);
+
+        // Smooth rotation only (not position)
+        if (Math.abs(velocityX) > 0.1 || Math.abs(velocityY) > 0.1) {
+            // Normalize angle difference to avoid spinning
+            let angleDiff = targetAngle - currentAngle;
+            while (angleDiff > 180) angleDiff -= 360;
+            while (angleDiff < -180) angleDiff += 360;
+            currentAngle += angleDiff * rotationSmoothing;
+        }
+
+        // Instant position update (no smoothing) for system cursor speed
+        rocket.style.left = mouseX + 'px';
+        rocket.style.top = mouseY + 'px';
+        rocket.style.transform = `translate(-50%, -50%) rotate(${currentAngle + 90}deg)`;
+
+        // Emit particles only when moving
+        if (isMoving && (Math.abs(velocityX) > 0.5 || Math.abs(velocityY) > 0.5)) {
+            createRocketParticle(mouseX, mouseY, currentAngle);
+        }
+
+        lastX = mouseX;
+        lastY = mouseY;
+
+        requestAnimationFrame(animateRocket);
+    }
+
+    function createRocketParticle(x, y, angle) {
+        // Random chance to create particle (throttle)
+        if (Math.random() > 0.3) return;
+
+        const particle = document.createElement('div');
+        particle.className = 'rocket-particle';
+
+        // Calculate exhaust position (back of rocket)
+        const exhaustAngle = (angle - 90) * (Math.PI / 180);
+        const exhaustDistance = 16;
+        const exhaustX = x - Math.cos(exhaustAngle) * exhaustDistance;
+        const exhaustY = y - Math.sin(exhaustAngle) * exhaustDistance;
+
+        particle.style.left = exhaustX + 'px';
+        particle.style.top = exhaustY + 'px';
+
+        // Random color from yellow, orange, red
+        const colors = ['#FFA500', '#FF6B35', '#FFD700', '#FF8C00'];
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.boxShadow = `0 0 8px ${particle.style.backgroundColor}`;
+
+        document.body.appendChild(particle);
+
+        // Remove after animation
+        setTimeout(() => {
+            if (particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+        }, 600);
+    }
+
+    animateRocket();
+
+    // 3D Cursor Parallax Effect on Hero Section
+    const heroSection = document.querySelector('.hero-section');
+    const heroContent = document.querySelector('.hero-content');
+
+    if (heroSection && heroContent) {
+        heroSection.addEventListener('mousemove', (e) => {
+            const rect = heroSection.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width;
+            const y = (e.clientY - rect.top) / rect.height;
+
+            const moveX = (x - 0.5) * 30; // Max 30px movement
+            const moveY = (y - 0.5) * 30;
+
+            heroContent.style.transform = `
+                translateX(${moveX}px) 
+                translateY(${moveY}px) 
+                rotateY(${(x - 0.5) * 5}deg) 
+                rotateX(${(0.5 - y) * 5}deg)
+            `;
+        });
+
+        heroSection.addEventListener('mouseleave', () => {
+            heroContent.style.transform = '';
+        });
+    }
+
+    // 3D Tilt Effect on Cards
+    function initTiltEffect() {
+        const cards = document.querySelectorAll('.project-card, .tool-card');
+
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                const y = (e.clientY - rect.top) / rect.height;
+
+                const tiltX = (y - 0.5) * 10; // Max 10deg tilt
+                const tiltY = (0.5 - x) * 10;
+
+                card.style.transform = `
+                    perspective(1000px) 
+                    translateY(-10px) 
+                    translateZ(20px) 
+                    rotateX(${tiltX}deg) 
+                    rotateY(${tiltY}deg)
+                `;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+            });
+        });
+    }
+
+    // Initialize tilt effect after a short delay
+    setTimeout(initTiltEffect, 1000);
+
+    // Parallax Scroll Effect for Sections
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+
+        // Parallax on particles
+        const particles = document.querySelector('#particles-js');
+        if (particles) {
+            particles.style.transform = `translateY(${scrolled * 0.5}px) translateZ(-100px)`;
+        }
+
+        // 3D scroll fade-in for project cards
+        const fadeElements = document.querySelectorAll('.project-card, .milestone');
+        fadeElements.forEach((el, index) => {
+            const rect = el.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+
+            if (rect.top < windowHeight * 0.8) {
+                el.classList.add('visible');
+                el.style.transitionDelay = `${index * 0.1}s`;
+            }
+        });
+    });
+
+    // Cursor Position Parallax for Background
+    document.addEventListener('mousemove', (e) => {
+        const moveX = (e.clientX / window.innerWidth - 0.5) * 20;
+        const moveY = (e.clientY / window.innerHeight - 0.5) * 20;
+
+        // Apply parallax to hero background
+        if (heroSection) {
+            const bgBefore = heroSection.querySelector('::before');
+            heroSection.style.backgroundPosition = `${50 + moveX}% ${50 + moveY}%`;
+        }
+    });
+
+    // Smooth Scroll Reveal Animation
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    };
+
+    const scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('fade-in-3d', 'visible');
+            }
+        });
+    }, observerOptions);
+
+    // Observe all sections for scroll animations
+    document.querySelectorAll('.journey-section, .projects-section, .tools-section, .contact-section').forEach(section => {
+        scrollObserver.observe(section);
+    });
+
+
     // Add cursor trail effect
     const cursorTrail = document.createElement('div');
     cursorTrail.className = 'cursor-trail';
     document.body.appendChild(cursorTrail);
-    
+
     // Initialize the particles array
     const particles = [];
     const maxParticles = 15; // Maximum number of particles in the trail
-    
+
     // Create cursor trail when mouse moves
-    document.addEventListener('mousemove', function(e) {
+    document.addEventListener('mousemove', function (e) {
         createParticle(e.clientX, e.clientY);
     });
-    
+
     function createParticle(x, y) {
         const particle = document.createElement('div');
         particle.className = 'trail-particle';
         particle.style.left = x + 'px';
         particle.style.top = y + 'px';
-        
+
         // Random size and color for variety
         const size = Math.random() * 5 + 3;
         const hue = Math.random() * 60 + 240; // Purple to pink range
-        
+
         particle.style.width = size + 'px';
         particle.style.height = size + 'px';
         particle.style.backgroundColor = `hsl(${hue}, 100%, 70%)`;
         particle.style.boxShadow = `0 0 ${size * 2}px hsl(${hue}, 100%, 70%)`;
-        
+
         cursorTrail.appendChild(particle);
         particles.push({
             element: particle,
@@ -43,14 +248,14 @@ document.addEventListener('DOMContentLoaded', function() {
             alpha: 1,
             speed: Math.random() * 2 + 1
         });
-        
+
         // Limit the number of particles
         if (particles.length > maxParticles) {
             const oldParticle = particles.shift();
             cursorTrail.removeChild(oldParticle.element);
         }
     }
-    
+
     // Animate particles
     function animateParticles() {
         particles.forEach((particle, index) => {
@@ -58,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
             particle.alpha -= 0.03;
             particle.y += particle.speed;
             particle.size -= 0.1;
-            
+
             if (particle.alpha <= 0 || particle.size <= 0) {
                 cursorTrail.removeChild(particle.element);
                 particles.splice(index, 1);
@@ -69,12 +274,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 particle.element.style.top = particle.y + 'px';
             }
         });
-        
+
         requestAnimationFrame(animateParticles);
     }
-    
+
     animateParticles();
-    
+
     // Animate the milestones on scroll
     const milestones = document.querySelectorAll('.milestone');
     if (hasGSAP) {
@@ -99,16 +304,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }, { rootMargin: "0px 0px -20% 0px" });
         milestones.forEach((m) => observer.observe(m));
     }
-    
+
     // Typewriter effect for the tagline
     const typewriterElement = document.getElementById('typewriter');
     if (typewriterElement) {
         const typewriterText = typewriterElement.textContent;
         typewriterElement.textContent = '';
-        
+
         let i = 0;
         const typeSpeed = 100; // typing speed in milliseconds
-        
+
         function typeWriter() {
             if (i < typewriterText.length) {
                 typewriterElement.textContent += typewriterText.charAt(i);
@@ -116,11 +321,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(typeWriter, typeSpeed);
             }
         }
-        
+
         // Start the typewriter effect after a short delay
         setTimeout(typeWriter, 1000);
     }
-    
+
     // Mobile menu toggle with overlay, ESC, and close button
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
@@ -179,15 +384,15 @@ document.addEventListener('DOMContentLoaded', function() {
             link.addEventListener('click', closeMenu);
         });
     }
-    
+
     // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
+        anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            
+
             const targetId = this.getAttribute('href');
             const targetElement = document.querySelector(targetId);
-            
+
             if (targetElement) {
                 window.scrollTo({
                     top: targetElement.offsetTop - 80, // Account for fixed header
@@ -196,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
+
     // Add floating effect to project cards
     const projectCards = document.querySelectorAll('.project-card');
     if (hasGSAP) {
@@ -211,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-    
+
     // Add glowing effect to CTA button
     const ctaButton = document.querySelector('.cta-button');
     if (hasGSAP && ctaButton) {
@@ -222,15 +427,15 @@ document.addEventListener('DOMContentLoaded', function() {
             duration: 2
         });
     }
-    
+
     // Create meteor animations
     if (!document.body.classList.contains('home')) { createMeteors(); }
-    
+
     // Initialize particles.js if container is present
     if (document.querySelector('#particles-js')) {
         particlesJS('particles-js', {
             particles: {
-                number: { value: 50, density: { enable: true, value_area: 800 } },
+                number: { value: 80, density: { enable: true, value_area: 800 } },
                 color: { value: "#ffffff" },
                 shape: { type: "circle" },
                 opacity: { value: 0.3, random: false },
@@ -245,23 +450,23 @@ document.addEventListener('DOMContentLoaded', function() {
             retina_detect: true
         });
     }
-    
+
     // Initialize tools if on tools page
     if (document.querySelector('.tools-section')) {
         initializeTools();
     }
-    
+
     // Handle contact form submission (client-side only)
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             // Get form data
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const message = document.getElementById('message').value;
-            
+
             // Show success message (in a real implementation, this would be after AJAX)
             const formContainer = contactForm.parentElement;
             formContainer.innerHTML = `
@@ -278,20 +483,20 @@ document.addEventListener('DOMContentLoaded', function() {
     function createMeteors() {
         if (!hasGSAP) { return; }
         const sections = document.querySelectorAll('section');
-        
+
         sections.forEach(section => {
             // Create between 1-3 meteors per section
             const meteorCount = Math.floor(Math.random() * 3) + 1;
-            
+
             for (let i = 0; i < meteorCount; i++) {
                 const meteor = document.createElement('div');
                 meteor.classList.add('meteor');
-                
+
                 // Random position and size
                 const size = Math.floor(Math.random() * 150) + 50;
                 const top = Math.floor(Math.random() * 100);
                 const left = Math.floor(Math.random() * 100);
-                
+
                 // Set meteor styles
                 meteor.style.position = 'absolute';
                 meteor.style.width = `${size}px`;
@@ -304,9 +509,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 meteor.style.transform = 'rotate(-45deg)';
                 meteor.style.zIndex = '1';
                 meteor.style.opacity = '0';
-                
+
                 section.appendChild(meteor);
-                
+
                 // Animate meteor
                 gsap.to(meteor, {
                     x: 300,
@@ -332,7 +537,7 @@ function initializeTools() {
     if (textToSpeech) {
         const textarea = textToSpeech.querySelector('textarea');
         const speakButton = textToSpeech.querySelector('.tool-button');
-        
+
         speakButton?.addEventListener('click', () => {
             if (textarea?.value) {
                 const utterance = new SpeechSynthesisUtterance(textarea.value);

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="cosmic-nav">
@@ -43,7 +45,8 @@
                             <img src="assets/images/calculator/2.jpeg" alt="Calculator Screenshot 2">
                             <button class="view-more-btn" onclick="openGallery('calculator')">View More</button>
                         </div>
-                        <p class="project-description">Basic calculator with user-friendly UI built using Angular and Ionic.</p>
+                        <p class="project-description">Basic calculator with user-friendly UI built using Angular and
+                            Ionic.</p>
                         <a href="assets/downloads/Calculator.apk" class="project-link" download>
                             <i class="fas fa-download"></i>
                             <span>Download APK</span>
@@ -87,15 +90,18 @@
                 <div class="projects-grid">
                     <div class="project-card">
                         <h3 class="project-title">Portfolio</h3>
-                        <p class="project-description">My personal developer portfolio showcasing my work and skills.</p>
+                        <p class="project-description">My personal developer portfolio showcasing my work and skills.
+                        </p>
                     </div>
                     <div class="project-card">
                         <h3 class="project-title">Professional Tile Fitting Website</h3>
-                        <p class="project-description">A business website for tile fitting services with modern design.</p>
+                        <p class="project-description">A business website for tile fitting services with modern design.
+                        </p>
                     </div>
                     <div class="project-card">
                         <h3 class="project-title">SustainEats</h3>
-                        <p class="project-description">A sustainability-focused food app prototype promoting eco-friendly dining.</p>
+                        <p class="project-description">A sustainability-focused food app prototype promoting
+                            eco-friendly dining.</p>
                     </div>
                     <div class="project-card">
                         <h3 class="project-title">Happening At</h3>
@@ -116,8 +122,19 @@
                 </div>
                 <div class="projects-grid">
                     <div class="project-card">
+                        <h3 class="project-title">Scammer Hunter</h3>
+                        <p class="project-description">PhonePe-style modern UI for scam detection and prevention.
+                            Features sleek interface design with real-time threat analysis.</p>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">UI/UX</span>
+                            <span class="tech-tag">Security</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
                         <h3 class="project-title">Sentiment Analyzer</h3>
-                        <p class="project-description">Analyzes the sentiment of user input (positive/negative/neutral).</p>
+                        <p class="project-description">Analyzes the sentiment of user input (positive/negative/neutral).
+                        </p>
                     </div>
                     <div class="project-card">
                         <h3 class="project-title">Open Port Scanner</h3>
@@ -189,9 +206,9 @@
             const modal = document.getElementById('galleryModal');
             const galleryImages = document.getElementById('galleryImages');
             galleryImages.innerHTML = '';
-            
+
             let imageCount;
-            switch(appType) {
+            switch (appType) {
                 case 'calculator':
                     imageCount = 4;
                     break;
@@ -203,7 +220,7 @@
                     break;
             }
 
-            for(let i = 1; i <= imageCount; i++) {
+            for (let i = 1; i <= imageCount; i++) {
                 const img = document.createElement('img');
                 img.src = `assets/images/${appType}/${i}.jpeg`;
                 img.alt = `${appType} Screenshot ${i}`;
@@ -221,7 +238,7 @@
         }
 
         // Close gallery when clicking outside of images
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             const modal = document.getElementById('galleryModal');
             if (event.target == modal) {
                 closeGallery();
@@ -229,4 +246,5 @@
         }
     </script>
 </body>
-</html> 
+
+</html>
