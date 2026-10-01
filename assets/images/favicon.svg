@@ -1,36 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
   <defs>
-    <linearGradient id="scFavGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="scFavCleanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#38BDF8"/>
-      <stop offset="50%" stop-color="#818CF8"/>
-      <stop offset="100%" stop-color="#F43F5E"/>
+      <stop offset="100%" stop-color="#2563EB"/>
     </linearGradient>
-
-    <linearGradient id="scFavGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#34D399"/>
-      <stop offset="60%" stop-color="#38BDF8"/>
-      <stop offset="100%" stop-color="#6366F1"/>
-    </linearGradient>
-
-    <filter id="scFavGlow">
-      <feGaussianBlur stdDeviation="2" result="blur"/>
-      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-    </filter>
   </defs>
 
-  <!-- Cute Rounded Squircle Frame -->
-  <rect width="64" height="64" rx="20" fill="#0E1628"/>
-  <rect x="2" y="2" width="60" height="60" rx="18" fill="#15213D" stroke="url(#scFavGrad1)" stroke-width="2.5"/>
+  <!-- Clean Professional Rounded Squircle Frame -->
+  <rect width="64" height="64" rx="18" fill="#0F172A"/>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="#15213D" stroke="url(#scFavCleanGrad)" stroke-width="2.5"/>
 
-  <!-- 'C' Outer Curve -->
-  <path d="M48 21 C43 15, 32 14, 25 19 C16 25, 16 39, 25 45 C32 50, 43 49, 48 43"
-        stroke="url(#scFavGrad2)" stroke-width="4.8" stroke-linecap="round" fill="none"/>
+  <!-- Minimalist Precision 'S' & 'C' Monogram -->
+  <!-- 'C' Outer Arc -->
+  <path d="M47 22 C43 16, 31 16, 25 21 C17 28, 17 36, 25 43 C31 48, 43 48, 47 42" 
+        stroke="#38BDF8" stroke-width="4.5" stroke-linecap="round" fill="none"/>
 
-  <!-- 'S' Fluid Inner Loop -->
-  <path d="M40 22 C37 18, 31 18, 27 21 C22 23, 23 29, 32 32 C41 35, 41 41, 36 44 C31 47, 25 44, 22 41"
-        stroke="url(#scFavGrad1)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
-
-  <!-- Playful Accent Node -->
-  <circle cx="47" cy="21" r="3.2" fill="#F43F5E" filter="url(#scFavGlow)"/>
-  <circle cx="18" cy="41" r="2.6" fill="#34D399"/>
+  <!-- 'S' Inner Flow -->
+  <path d="M39 23 C36 20, 30 20, 27 23 C23 26, 25 30, 33 33 C40 35, 40 40, 36 43 C32 46, 26 44, 23 40" 
+        stroke="#FFFFFF" stroke-width="4.2" stroke-linecap="round" fill="none"/>
 </svg>
