@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Disallow unnecessary files
+Disallow: /assets/downloads/
+
+Sitemap: https://surajorg.in/sitemap.xml

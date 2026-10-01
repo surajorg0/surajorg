@@ -1,626 +1,391 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const hasGSAP = typeof window.gsap !== 'undefined';
-    const hasScrollTrigger = typeof window.ScrollTrigger !== 'undefined';
-    if (hasGSAP && hasScrollTrigger) {
-        gsap.registerPlugin(ScrollTrigger);
-    }
-
-    // Rocket Cursor Implementation - Optimized for instant response
-    const rocket = document.createElement('div');
-    rocket.className = 'rocket-cursor';
-    rocket.innerHTML = '<img src="assets/images/rocket-cursor.svg" alt="cursor">';
-    document.body.appendChild(rocket);
-
-    let mouseX = 0, mouseY = 0;
-    let lastX = 0, lastY = 0;
-    let velocityX = 0, velocityY = 0;
-    let currentAngle = 0;
-    const rotationSmoothing = 0.15; // Only smooth rotation, not position
-
-    let isMoving = false;
-    let movementTimeout = null;
-
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-
-        // Track movement
-        isMoving = true;
-        clearTimeout(movementTimeout);
-        movementTimeout = setTimeout(() => {
-            isMoving = false;
-        }, 100);
-    });
-
-    function animateRocket() {
-        // Calculate velocity for rotation (before updating position)
-        velocityX = mouseX - lastX;
-        velocityY = mouseY - lastY;
-
-        // Calculate target rotation angle
-        const targetAngle = Math.atan2(velocityY, velocityX) * (180 / Math.PI);
-
-        // Smooth rotation only (not position)
-        if (Math.abs(velocityX) > 0.1 || Math.abs(velocityY) > 0.1) {
-            // Normalize angle difference to avoid spinning
-            let angleDiff = targetAngle - currentAngle;
-            while (angleDiff > 180) angleDiff -= 360;
-            while (angleDiff < -180) angleDiff += 360;
-            currentAngle += angleDiff * rotationSmoothing;
-        }
-
-        // Instant position update (no smoothing) for system cursor speed
-        rocket.style.left = mouseX + 'px';
-        rocket.style.top = mouseY + 'px';
-        rocket.style.transform = `translate(-50%, -50%) rotate(${currentAngle + 90}deg)`;
-
-        // Emit particles only when moving
-        if (isMoving && (Math.abs(velocityX) > 0.5 || Math.abs(velocityY) > 0.5)) {
-            createRocketParticle(mouseX, mouseY, currentAngle);
-        }
-
-        lastX = mouseX;
-        lastY = mouseY;
-
-        requestAnimationFrame(animateRocket);
-    }
-
-    function createRocketParticle(x, y, angle) {
-        // Random chance to create particle (throttle)
-        if (Math.random() > 0.3) return;
-
-        const particle = document.createElement('div');
-        particle.className = 'rocket-particle';
-
-        // Calculate exhaust position (back of rocket)
-        const exhaustAngle = (angle - 90) * (Math.PI / 180);
-        const exhaustDistance = 16;
-        const exhaustX = x - Math.cos(exhaustAngle) * exhaustDistance;
-        const exhaustY = y - Math.sin(exhaustAngle) * exhaustDistance;
-
-        particle.style.left = exhaustX + 'px';
-        particle.style.top = exhaustY + 'px';
-
-        // Random color from yellow, orange, red
-        const colors = ['#FFA500', '#FF6B35', '#FFD700', '#FF8C00'];
-        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        particle.style.boxShadow = `0 0 8px ${particle.style.backgroundColor}`;
-
-        document.body.appendChild(particle);
-
-        // Remove after animation
-        setTimeout(() => {
-            if (particle.parentNode) {
-                particle.parentNode.removeChild(particle);
-            }
-        }, 600);
-    }
-
-    animateRocket();
-
-    // 3D Cursor Parallax Effect on Hero Section
-    const heroSection = document.querySelector('.hero-section');
-    const heroContent = document.querySelector('.hero-content');
-
-    if (heroSection && heroContent) {
-        heroSection.addEventListener('mousemove', (e) => {
-            const rect = heroSection.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width;
-            const y = (e.clientY - rect.top) / rect.height;
-
-            const moveX = (x - 0.5) * 30; // Max 30px movement
-            const moveY = (y - 0.5) * 30;
-
-            heroContent.style.transform = `
-                translateX(${moveX}px) 
-                translateY(${moveY}px) 
-                rotateY(${(x - 0.5) * 5}deg) 
-                rotateX(${(0.5 - y) * 5}deg)
-            `;
-        });
-
-        heroSection.addEventListener('mouseleave', () => {
-            heroContent.style.transform = '';
-        });
-    }
-
-    // 3D Tilt Effect on Cards
-    function initTiltEffect() {
-        const cards = document.querySelectorAll('.project-card, .tool-card');
-
-        cards.forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = (e.clientX - rect.left) / rect.width;
-                const y = (e.clientY - rect.top) / rect.height;
-
-                const tiltX = (y - 0.5) * 10; // Max 10deg tilt
-                const tiltY = (0.5 - x) * 10;
-
-                card.style.transform = `
-                    perspective(1000px) 
-                    translateY(-10px) 
-                    translateZ(20px) 
-                    rotateX(${tiltX}deg) 
-                    rotateY(${tiltY}deg)
-                `;
-            });
-
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = '';
-            });
-        });
-    }
-
-    // Initialize tilt effect after a short delay
-    setTimeout(initTiltEffect, 1000);
-
-    // Parallax Scroll Effect for Sections
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-
-        // Parallax on particles
-        const particles = document.querySelector('#particles-js');
-        if (particles) {
-            particles.style.transform = `translateY(${scrolled * 0.5}px) translateZ(-100px)`;
-        }
-
-        // 3D scroll fade-in for project cards
-        const fadeElements = document.querySelectorAll('.project-card, .milestone');
-        fadeElements.forEach((el, index) => {
-            const rect = el.getBoundingClientRect();
-            const windowHeight = window.innerHeight;
-
-            if (rect.top < windowHeight * 0.8) {
-                el.classList.add('visible');
-                el.style.transitionDelay = `${index * 0.1}s`;
-            }
-        });
-    });
-
-    // Cursor Position Parallax for Background
-    document.addEventListener('mousemove', (e) => {
-        const moveX = (e.clientX / window.innerWidth - 0.5) * 20;
-        const moveY = (e.clientY / window.innerHeight - 0.5) * 20;
-
-        // Apply parallax to hero background
-        if (heroSection) {
-            const bgBefore = heroSection.querySelector('::before');
-            heroSection.style.backgroundPosition = `${50 + moveX}% ${50 + moveY}%`;
-        }
-    });
-
-    // Smooth Scroll Reveal Animation
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -100px 0px'
-    };
-
-    const scrollObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('fade-in-3d', 'visible');
-            }
-        });
-    }, observerOptions);
-
-    // Observe all sections for scroll animations
-    document.querySelectorAll('.journey-section, .projects-section, .tools-section, .contact-section').forEach(section => {
-        scrollObserver.observe(section);
-    });
-
-
-    // Add cursor trail effect
-    const cursorTrail = document.createElement('div');
-    cursorTrail.className = 'cursor-trail';
-    document.body.appendChild(cursorTrail);
-
-    // Initialize the particles array
-    const particles = [];
-    const maxParticles = 15; // Maximum number of particles in the trail
-
-    // Create cursor trail when mouse moves
-    document.addEventListener('mousemove', function (e) {
-        createParticle(e.clientX, e.clientY);
-    });
-
-    function createParticle(x, y) {
-        const particle = document.createElement('div');
-        particle.className = 'trail-particle';
-        particle.style.left = x + 'px';
-        particle.style.top = y + 'px';
-
-        // Random size and color for variety
-        const size = Math.random() * 5 + 3;
-        const hue = Math.random() * 60 + 240; // Purple to pink range
-
-        particle.style.width = size + 'px';
-        particle.style.height = size + 'px';
-        particle.style.backgroundColor = `hsl(${hue}, 100%, 70%)`;
-        particle.style.boxShadow = `0 0 ${size * 2}px hsl(${hue}, 100%, 70%)`;
-
-        cursorTrail.appendChild(particle);
-        particles.push({
-            element: particle,
-            x: x,
-            y: y,
-            size: size,
-            alpha: 1,
-            speed: Math.random() * 2 + 1
-        });
-
-        // Limit the number of particles
-        if (particles.length > maxParticles) {
-            const oldParticle = particles.shift();
-            cursorTrail.removeChild(oldParticle.element);
-        }
-    }
-
-    // Animate particles
-    function animateParticles() {
-        particles.forEach((particle, index) => {
-            // Fade and shrink
-            particle.alpha -= 0.03;
-            particle.y += particle.speed;
-            particle.size -= 0.1;
-
-            if (particle.alpha <= 0 || particle.size <= 0) {
-                cursorTrail.removeChild(particle.element);
-                particles.splice(index, 1);
-            } else {
-                particle.element.style.opacity = particle.alpha;
-                particle.element.style.width = particle.size + 'px';
-                particle.element.style.height = particle.size + 'px';
-                particle.element.style.top = particle.y + 'px';
-            }
-        });
-
-        requestAnimationFrame(animateParticles);
-    }
-
-    animateParticles();
-
-    // Animate the milestones on scroll
-    const milestones = document.querySelectorAll('.milestone');
-    if (hasGSAP) {
-        milestones.forEach((milestone) => {
-            gsap.to(milestone, {
-                scrollTrigger: {
-                    trigger: milestone,
-                    start: "top 80%",
-                    end: "bottom 20%",
-                    toggleClass: "visible",
-                    once: true
-                }
-            });
-        });
-    } else {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { rootMargin: "0px 0px -20% 0px" });
-        milestones.forEach((m) => observer.observe(m));
-    }
-
-    // Typewriter effect for the tagline
-    const typewriterElement = document.getElementById('typewriter');
-    if (typewriterElement) {
-        const typewriterText = typewriterElement.textContent;
-        typewriterElement.textContent = '';
-
-        let i = 0;
-        const typeSpeed = 100; // typing speed in milliseconds
-
-        function typeWriter() {
-            if (i < typewriterText.length) {
-                typewriterElement.textContent += typewriterText.charAt(i);
-                i++;
-                setTimeout(typeWriter, typeSpeed);
-            }
-        }
-
-        // Start the typewriter effect after a short delay
-        setTimeout(typeWriter, 1000);
-    }
-
-    // Mobile menu toggle with overlay, ESC, and close button
-    const hamburger = document.querySelector('.hamburger');
-    const navLinks = document.querySelector('.nav-links');
-
-    // Ensure a single overlay exists
-    let overlay = document.querySelector('.nav-overlay');
-    if (!overlay) {
-        overlay = document.createElement('div');
-        overlay.className = 'nav-overlay';
-        document.body.appendChild(overlay);
-    }
-
-    function openMenu() {
-        if (hamburger) hamburger.classList.add('active');
-        if (navLinks) navLinks.classList.add('active');
-        document.body.classList.add('menu-open');
-    }
-
-    function closeMenu() {
-        if (hamburger) hamburger.classList.remove('active');
-        if (navLinks) navLinks.classList.remove('active');
-        document.body.classList.remove('menu-open');
-    }
-
-    if (hamburger && navLinks) {
-        // Toggle menu
-        hamburger.addEventListener('click', () => {
-            const isOpen = document.body.classList.contains('menu-open');
-            if (isOpen) {
-                closeMenu();
-            } else {
-                openMenu();
-            }
-        });
-
-        // Inject a close button into the nav if missing
-        let navClose = navLinks.querySelector('.nav-close');
-        if (!navClose) {
-            navClose = document.createElement('button');
-            navClose.className = 'nav-close';
-            navClose.type = 'button';
-            navClose.innerHTML = '&times;';
-            navLinks.insertBefore(navClose, navLinks.firstChild);
-        }
-
-        // Close on overlay click
-        overlay.addEventListener('click', closeMenu);
-        // Close on close button click
-        navClose.addEventListener('click', closeMenu);
-        // Close on ESC
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeMenu();
-        });
-        // Close when clicking any nav link
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', closeMenu);
-        });
-    }
-
-    // Smooth scrolling for navigation links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-
-            const targetId = this.getAttribute('href');
-            const targetElement = document.querySelector(targetId);
-
-            if (targetElement) {
-                window.scrollTo({
-                    top: targetElement.offsetTop - 80, // Account for fixed header
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
-
-    // Add floating effect to project cards
-    const projectCards = document.querySelectorAll('.project-card');
-    if (hasGSAP) {
-        projectCards.forEach((card, index) => {
-            gsap.to(card, {
-                y: -10,
-                duration: 2,
-                repeat: -1,
-                yoyo: true,
-                ease: "sine.inOut",
-                delay: index * 0.2
-            });
-        });
-    }
-
-    // Add glowing effect to CTA button
-    const ctaButton = document.querySelector('.cta-button');
-    if (hasGSAP && ctaButton) {
-        gsap.to(ctaButton, {
-            boxShadow: '0 0 20px #8a2be2, 0 0 40px #8a2be2',
-            repeat: -1,
-            yoyo: true,
-            duration: 2
-        });
-    }
-
-    // Create meteor animations
-    if (!document.body.classList.contains('home')) { createMeteors(); }
-
-    // Initialize particles.js if container is present
-    if (document.querySelector('#particles-js')) {
-        particlesJS('particles-js', {
-            particles: {
-                number: { value: 80, density: { enable: true, value_area: 800 } },
-                color: { value: "#ffffff" },
-                shape: { type: "circle" },
-                opacity: { value: 0.3, random: false },
-                size: { value: 3, random: true },
-                line_linked: { enable: true, distance: 150, color: "#ffffff", opacity: 0.2, width: 1 },
-                move: { enable: true, speed: 2, direction: "none", random: false, straight: false, out_mode: "out", bounce: false }
-            },
-            interactivity: {
-                detect_on: "canvas",
-                events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: false }, resize: true }
-            },
-            retina_detect: true
-        });
-    }
-
-    // Initialize tools if on tools page
-    if (document.querySelector('.tools-section')) {
-        initializeTools();
-    }
-
-    // Handle contact form submission (client-side only)
-    const contactForm = document.getElementById('contactForm');
-    if (contactForm) {
-        contactForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            // Get form data
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
-
-            // Show success message (in a real implementation, this would be after AJAX)
-            const formContainer = contactForm.parentElement;
-            formContainer.innerHTML = `
-                <div class="success-message">
-                    <h3>Message Sent Successfully!</h3>
-                    <p>Thank you, ${name}! Your transmission has been received.</p>
-                    <p>I'll respond to your message at ${email} as soon as possible.</p>
-                </div>
-            `;
-        });
-    }
-
-    // Add cosmic floating elements randomly
-    function createMeteors() {
-        if (!hasGSAP) { return; }
-        const sections = document.querySelectorAll('section');
-
-        sections.forEach(section => {
-            // Create between 1-3 meteors per section
-            const meteorCount = Math.floor(Math.random() * 3) + 1;
-
-            for (let i = 0; i < meteorCount; i++) {
-                const meteor = document.createElement('div');
-                meteor.classList.add('meteor');
-
-                // Random position and size
-                const size = Math.floor(Math.random() * 150) + 50;
-                const top = Math.floor(Math.random() * 100);
-                const left = Math.floor(Math.random() * 100);
-
-                // Set meteor styles
-                meteor.style.position = 'absolute';
-                meteor.style.width = `${size}px`;
-                meteor.style.height = `${size / 5}px`;
-                meteor.style.background = 'linear-gradient(90deg, rgba(138, 43, 226, 0), rgba(138, 43, 226, 0.8))';
-                meteor.style.boxShadow = '0 0 20px rgba(138, 43, 226, 0.5)';
-                meteor.style.borderRadius = '50%';
-                meteor.style.top = `${top}%`;
-                meteor.style.left = `${left}%`;
-                meteor.style.transform = 'rotate(-45deg)';
-                meteor.style.zIndex = '1';
-                meteor.style.opacity = '0';
-
-                section.appendChild(meteor);
-
-                // Animate meteor
-                gsap.to(meteor, {
-                    x: 300,
-                    y: 300,
-                    opacity: 1,
-                    duration: Math.random() * 5 + 5,
-                    delay: Math.random() * 10,
-                    repeat: -1,
-                    repeatDelay: Math.random() * 10 + 10,
-                    ease: 'power2.in'
-                });
-            }
-        });
-    }
+/**
+ * SURAJORG PORTFOLIO — main.js
+ * Premium interactive features, animations, particles
+ */
+
+'use strict';
+
+/* ═══════════════════════════════════════════
+   1. DOM READY
+═══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  initCursor();
+  initNav();
+  initParticles();
+  initTypewriter();
+  initReveal();
+  initCounters();
+  initScreenshotScroll();
+  initForm();
+  initBackToTop();
+  initMobileMenu();
+  setYear();
 });
 
+/* ═══════════════════════════════════════════
+   2. CURSOR
+═══════════════════════════════════════════ */
+function initCursor() {
+  const cursor = document.getElementById('cursor');
+  if (!cursor || window.matchMedia('(pointer: coarse)').matches) {
+    if (cursor) cursor.style.display = 'none';
+    document.body.style.cursor = 'auto';
+    document.querySelectorAll('button').forEach(b => b.style.cursor = 'pointer');
+    return;
+  }
 
+  const dot  = cursor.querySelector('.cursor-dot');
+  const ring = cursor.querySelector('.cursor-ring');
+  let mx = 0, my = 0;
+  let rx = 0, ry = 0;
 
-// Tools initialization
-function initializeTools() {
-    // Text to Speech
-    const textToSpeech = document.querySelector('[data-tool="text-speech"]');
-    if (textToSpeech) {
-        const textarea = textToSpeech.querySelector('textarea');
-        const speakButton = textToSpeech.querySelector('.tool-button');
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX;
+    my = e.clientY;
+    dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+  });
 
-        speakButton?.addEventListener('click', () => {
-            if (textarea?.value) {
-                const utterance = new SpeechSynthesisUtterance(textarea.value);
-                window.speechSynthesis.speak(utterance);
-            }
-        });
-    }
+  // Lag ring for smooth follow
+  function animateRing() {
+    rx += (mx - rx) * 0.14;
+    ry += (my - ry) * 0.14;
+    ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
 
-    // Password Generator
-    const passwordGen = document.querySelector('[data-tool="password"]');
-    if (passwordGen) {
-        const generateBtn = passwordGen.querySelector('.tool-button');
-        const lengthInput = passwordGen.querySelector('input[type="number"]');
-        const output = passwordGen.querySelector('.generated-password');
-        const checkboxes = passwordGen.querySelectorAll('input[type="checkbox"]');
-
-        generateBtn?.addEventListener('click', () => {
-            const length = parseInt(lengthInput?.value || '12');
-            const useUppercase = checkboxes[0]?.checked;
-            const useNumbers = checkboxes[1]?.checked;
-            const useSymbols = checkboxes[2]?.checked;
-
-            const password = generatePassword(length, useUppercase, useNumbers, useSymbols);
-            if (output) output.value = password;
-        });
-    }
-
-    // Word Counter
-    const wordCounter = document.querySelector('[data-tool="wordcount"]');
-    if (wordCounter) {
-        const textarea = wordCounter.querySelector('textarea');
-        const wordCount = wordCounter.querySelector('.word-count');
-        const charCount = wordCounter.querySelector('.char-count');
-
-        textarea?.addEventListener('input', () => {
-            if (textarea.value) {
-                const words = textarea.value.trim().split(/\s+/).filter(word => word.length > 0);
-                if (wordCount) wordCount.textContent = words.length.toString();
-                if (charCount) charCount.textContent = textarea.value.length.toString();
-            } else {
-                if (wordCount) wordCount.textContent = '0';
-                if (charCount) charCount.textContent = '0';
-            }
-        });
-    }
-
-    // QR Code Generator
-    const qrGen = document.querySelector('[data-tool="qrcode"]');
-    if (qrGen) {
-        const input = qrGen.querySelector('input');
-        const generateBtn = qrGen.querySelector('.tool-button');
-        const output = qrGen.querySelector('.qrcode-output');
-
-        generateBtn?.addEventListener('click', () => {
-            if (input?.value && output) {
-                output.innerHTML = '';
-                const qr = new QRCode(output, {
-                    text: input.value,
-                    width: 128,
-                    height: 128
-                });
-            }
-        });
-    }
+  // Hover state on interactive elements
+  const hoverables = 'a, button, .skill-card, .project-card, .info-card, .edu-card, .cert-item, .contact-item, input, textarea, .btn';
+  document.querySelectorAll(hoverables).forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+  });
 }
 
-// Password Generator Helper Function
-function generatePassword(length, useUppercase, useNumbers, useSymbols) {
-    const lowercase = 'abcdefghijklmnopqrstuvwxyz';
-    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const numbers = '0123456789';
-    const symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+/* ═══════════════════════════════════════════
+   3. NAV (scroll & active link)
+═══════════════════════════════════════════ */
+function initNav() {
+  const nav  = document.getElementById('nav');
+  const links = document.querySelectorAll('[data-nav]');
 
-    let chars = lowercase;
-    if (useUppercase) chars += uppercase;
-    if (useNumbers) chars += numbers;
-    if (useSymbols) chars += symbols;
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
 
-    let password = '';
-    for (let i = 0; i < length; i++) {
-        const randomIndex = Math.floor(Math.random() * chars.length);
-        password += chars[randomIndex];
+  // Active link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => {
+          l.classList.toggle('active', l.getAttribute('href') === `#${e.target.id}`);
+        });
+      }
+    });
+  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+
+  sections.forEach(s => obs.observe(s));
+
+  // Smooth close of mobile menu on anchor click
+  links.forEach(l => {
+    l.addEventListener('click', () => closeMobileMenu());
+  });
+}
+
+/* ═══════════════════════════════════════════
+   4. MOBILE MENU
+═══════════════════════════════════════════ */
+function initMobileMenu() {
+  const hamburger  = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (!hamburger || !mobileMenu) return;
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open', isOpen);
+    mobileMenu.setAttribute('aria-hidden', String(!isOpen));
+    hamburger.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  document.querySelectorAll('.mobile-link').forEach(l => {
+    l.addEventListener('click', closeMobileMenu);
+  });
+}
+
+function closeMobileMenu() {
+  document.getElementById('hamburger')?.classList.remove('open');
+  document.getElementById('mobileMenu')?.classList.remove('open');
+  document.getElementById('mobileMenu')?.setAttribute('aria-hidden', 'true');
+  document.getElementById('hamburger')?.setAttribute('aria-expanded', 'false');
+}
+
+/* ═══════════════════════════════════════════
+   5. PARTICLE CANVAS
+═══════════════════════════════════════════ */
+function initParticles() {
+  const canvas = document.getElementById('particleCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  let W, H, particles = [], animId;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize, { passive: true });
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x  = Math.random() * W;
+      this.y  = Math.random() * H;
+      this.vx = (Math.random() - 0.5) * 0.3;
+      this.vy = (Math.random() - 0.5) * 0.3;
+      this.size  = Math.random() * 1.5 + 0.5;
+      this.alpha = Math.random() * 0.4 + 0.1;
+      this.color = Math.random() > 0.5 ? '0,212,255' : '139,92,246';
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${this.color},${this.alpha})`;
+      ctx.fill();
+    }
+  }
+
+  // Create particles
+  const COUNT = Math.min(80, Math.floor(W / 20));
+  for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+
+  // Draw connecting lines
+  function drawLines() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(0,212,255,${0.06 * (1 - dist / 120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => { p.update(); p.draw(); });
+    drawLines();
+    animId = requestAnimationFrame(animate);
+  }
+  animate();
+
+  // Pause when tab hidden
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) cancelAnimationFrame(animId);
+    else animate();
+  });
+}
+
+/* ═══════════════════════════════════════════
+   6. TYPEWRITER
+═══════════════════════════════════════════ */
+function initTypewriter() {
+  const el = document.getElementById('roleText');
+  if (!el) return;
+
+  const roles = [
+    'Business Analyst',
+    'Full-Stack Developer',
+    'Angular Developer',
+    'AI-Assisted Builder',
+    'Technical Coordinator',
+    'Mobile App Creator',
+  ];
+
+  let ri = 0, ci = 0, deleting = false;
+
+  function type() {
+    const current = roles[ri];
+    if (deleting) {
+      ci--;
+      el.textContent = current.substring(0, ci);
+      if (ci === 0) {
+        deleting = false;
+        ri = (ri + 1) % roles.length;
+        setTimeout(type, 400);
+        return;
+      }
+      setTimeout(type, 40);
+    } else {
+      ci++;
+      el.textContent = current.substring(0, ci);
+      if (ci === current.length) {
+        setTimeout(() => { deleting = true; type(); }, 2200);
+        return;
+      }
+      setTimeout(type, 70);
+    }
+  }
+  setTimeout(type, 800);
+}
+
+/* ═══════════════════════════════════════════
+   7. SCROLL REVEAL
+═══════════════════════════════════════════ */
+function initReveal() {
+  const items = document.querySelectorAll('.reveal');
+  if (!items.length) return;
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const delay = parseInt(e.target.dataset.delay || 0);
+        setTimeout(() => e.target.classList.add('visible'), delay);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
+
+  items.forEach(el => obs.observe(el));
+}
+
+/* ═══════════════════════════════════════════
+   8. COUNTER ANIMATION
+═══════════════════════════════════════════ */
+function initCounters() {
+  const counters = document.querySelectorAll('[data-count]');
+  if (!counters.length) return;
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el  = e.target;
+      const end = parseInt(el.dataset.count);
+      const dur = 1200;
+      const start = performance.now();
+
+      function update(now) {
+        const progress = Math.min((now - start) / dur, 1);
+        const ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        el.textContent = Math.round(ease * end);
+        if (progress < 1) requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+      obs.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+
+  counters.forEach(c => obs.observe(c));
+}
+
+/* ═══════════════════════════════════════════
+   9. AUTO SCROLL SCREENSHOTS
+═══════════════════════════════════════════ */
+function initScreenshotScroll() {
+  document.querySelectorAll('.screenshots-scroll').forEach(container => {
+    let scrolling = false;
+    let dir = 1;
+    let lastTime = 0;
+    let intervalId;
+
+    function autoScroll() {
+      if (scrolling) return;
+      const max = container.scrollWidth - container.clientWidth;
+      if (max <= 0) return;
+
+      intervalId = setInterval(() => {
+        container.scrollLeft += dir * 1.2;
+        if (container.scrollLeft >= max) dir = -1;
+        if (container.scrollLeft <= 0) dir = 1;
+      }, 16);
     }
 
-    return password;
+    container.addEventListener('mouseenter', () => {
+      scrolling = true;
+      clearInterval(intervalId);
+    });
+    container.addEventListener('mouseleave', () => {
+      scrolling = false;
+      autoScroll();
+    });
+
+    autoScroll();
+  });
+}
+
+/* ═══════════════════════════════════════════
+   10. CONTACT FORM
+═══════════════════════════════════════════ */
+function initForm() {
+  const form = document.getElementById('contactForm');
+  const note = document.getElementById('formNote');
+  const btn  = document.getElementById('submitBtn');
+  if (!form) return;
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const label = btn.querySelector('.btn-label');
+    btn.disabled = true;
+    if (label) label.textContent = 'Sending…';
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+
+      if (res.ok) {
+        note.textContent = '✓ Message sent! I\'ll get back to you soon.';
+        note.style.color = 'var(--mint)';
+        form.reset();
+      } else {
+        throw new Error('Form submission failed');
+      }
+    } catch {
+      note.textContent = '✗ Something went wrong. Please email me directly.';
+      note.style.color = 'var(--pink)';
+    } finally {
+      btn.disabled = false;
+      if (label) label.textContent = 'Send Message';
+      setTimeout(() => { note.textContent = ''; }, 6000);
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════
+   11. BACK TO TOP
+═══════════════════════════════════════════ */
+function initBackToTop() {
+  const btn = document.getElementById('backToTop');
+  if (!btn) return;
+
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 500);
+  }, { passive: true });
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+/* ═══════════════════════════════════════════
+   12. YEAR
+═══════════════════════════════════════════ */
+function setYear() {
+  const el = document.getElementById('year');
+  if (el) el.textContent = new Date().getFullYear();
 }
