@@ -62,7 +62,6 @@ surajorg/
     └── images/
         ├── logo.svg                # Brand SVG logo with geometric monogram & typography
         ├── favicon.svg             # Brand SVG favicon squircle
-        ├── suraj.jpeg              # Official profile portrait photograph
         ├── calculator/             # 4 APK application screenshots (1.jpeg - 4.jpeg)
         ├── cars/                   # 6 APK application screenshots (1.jpeg - 6.jpeg)
         └── jira/                   # 5 Jira Tracker APK screenshots (2.jpeg - 6.jpeg)
@@ -80,7 +79,7 @@ Each page in the application is self-contained and semantically structured:
   - Hero Section with glowing status pill ("Available for BA & Tech Opportunities").
   - Large-format display heading with fixed high-contrast gradient: `Hi, I'm Suraj Choudhari`.
   - Four key metric counters: 4+ MSquare Products, 9+ Deployed Apps, M.Sc. IT Degree, 100% Delivery Focus.
-  - Interactive profile card with photo (`suraj.jpeg`) and floating badges.
+  - Interactive tech architecture console card (privacy-safe profile spec) and floating badges.
   - Dual Competency pillars: Requirement Engineering (BRD), Wireframing & Rapid Architecture, Full-Stack & Mobile Deployment.
   - Featured work teaser cards with live demo links.
   - Call-to-Action consultation banner.
@@ -122,7 +121,7 @@ Each page in the application is self-contained and semantically structured:
 ### 5. `contact.html` (Contact & Consultation)
 - **Role:** Direct channel for client inquiries, recruiter outreach, and consultations.
 - **Key Components:**
-  - Direct contact cards: Email (`Surajorg47@gmail.com`), Phone (`+91 8180012573`), Location (Jalna, Maharashtra), Availability (Mon–Sat, response <24h).
+  - Direct contact cards: Email (`Surajorg47@gmail.com`), GitHub (`github.com/surajorg0`), Location (Jalna, Maharashtra), Availability (Mon–Sat, response <24h).
   - Validated interactive inquiry form (Name, Email, Area of Discussion, Message).
   - Live feedback banner (Success / Error alerts).
   - Expandable FAQ Accordion addressing common business analysis and technical inquiries.
@@ -252,7 +251,6 @@ All interactivity is managed in `assets/js/main.js`:
 
 - `assets/images/logo.svg`: High-resolution vector logo featuring the geometric S-nexus shield and "SURAJ .ORG" typography.
 - `assets/images/favicon.svg`: Matching 64x64 vector favicon squircle.
-- `assets/images/suraj.jpeg`: Official high-resolution portrait.
 - `assets/images/jira/`: Screenshots of the Jira Tracker mobile app (`2.jpeg` through `6.jpeg`).
 - `assets/images/calculator/`: Screenshots of the Calculator APK (`1.jpeg` through `4.jpeg`).
 - `assets/images/cars/`: Screenshots of the Car Collection APK (`1.jpeg` through `6.jpeg`).
