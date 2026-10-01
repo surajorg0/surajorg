@@ -252,8 +252,8 @@ All interactivity is managed in `assets/js/main.js`:
 
 ## 8. Assets & Media Catalog
 
-- `assets/images/logo.svg`: High-resolution vector logo featuring the geometric S-nexus shield and "SURAJ .ORG" typography.
-- `assets/images/favicon.svg`: Matching 64x64 vector favicon squircle.
+- `assets/images/logo.svg`: High-resolution vector logo featuring the cute & professional interlocking 'SC' monogram with modern typography.
+- `assets/images/favicon.svg`: Matching cute & professional 64x64 vector 'SC' monogram favicon.
 - `assets/images/jira/`: Screenshots of the Jira Tracker mobile app (`2.jpeg` through `6.jpeg`).
 - `assets/images/calculator/`: Screenshots of the Calculator APK (`1.jpeg` through `4.jpeg`).
 - `assets/images/cars/`: Screenshots of the Car Collection APK (`1.jpeg` through `6.jpeg`).

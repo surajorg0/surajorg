@@ -1,7 +1,7 @@
 # Suraj Ghanshyam Choudhari
 **Business Analyst · Full-Stack Developer · Technical Coordinator**
 
-📧 Surajorg47@gmail.com · 📞 8180012573 · 📍 Jangda Nagar, Jalna, Maharashtra
+📧 Surajorg47@gmail.com · 📍 Jalna, Maharashtra
 🌐 [surajorg.in](https://surajorg.in) · 💻 [github.com/surajorg0](https://github.com/surajorg0)
 
 ---
@@ -17,8 +17,7 @@ M.Sc. IT professional currently working as a Business Analyst at MSquare Softwar
 | Field | Detail |
 |---|---|
 | Email | Surajorg47@gmail.com |
-| Phone | 8180012573 |
-| Address | Jangda Nagar, Jalna, Maharashtra |
+| Address | Jalna, Maharashtra |
 | Portfolio | https://surajorg.in |
 | GitHub | https://github.com/surajorg0 |
 | LinkedIn | *(add when available)* |
