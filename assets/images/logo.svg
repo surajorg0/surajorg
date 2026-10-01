@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" fill="none">
+  <defs>
+    <!-- Brand Gradients -->
+    <linearGradient id="logoGradPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="50%" stop-color="#06B6D4"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+    <linearGradient id="logoGradAccent" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#60A5FA"/>
+    </linearGradient>
+    <filter id="logoGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Modern Nexus Monogram Icon -->
+  <g transform="translate(6, 6)">
+    <!-- Outer Shield / Hexagon Frame -->
+    <rect x="2" y="2" width="44" height="44" rx="12" fill="#0F172A" stroke="url(#logoGradPrimary)" stroke-width="2"/>
+    <rect x="6" y="6" width="36" height="36" rx="8" fill="#1E293B" opacity="0.6"/>
+
+    <!-- Stylized 'S' Geometric Tech Nexus -->
+    <path d="M34 16 C34 16, 31 13, 24 13 C17 13, 15 17, 15 20 C15 25, 33 24, 33 30 C33 35, 29 37, 24 37 C17 37, 14 34, 14 34"
+          stroke="url(#logoGradPrimary)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <!-- Central Energy Node -->
+    <circle cx="24" cy="25" r="2.5" fill="#38BDF8" filter="url(#logoGlow)"/>
+    <circle cx="16" cy="15" r="1.5" fill="#10B981"/>
+    <circle cx="32" cy="35" r="1.5" fill="#2563EB"/>
+  </g>
+
+  <!-- Brand Typography -->
+  <!-- SURAJ Text -->
+  <text x="62" y="34" font-family="'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" font-weight="800" font-size="22" letter-spacing="0.05em" fill="#FFFFFF">
+    SURAJ
+  </text>
+  
+  <!-- .ORG Pill Badge -->
+  <g transform="translate(152, 16)">
+    <rect x="0" y="0" width="56" height="24" rx="6" fill="#1E293B" stroke="url(#logoGradPrimary)" stroke-width="1.2"/>
+    <text x="28" y="16" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="11" fill="#38BDF8" letter-spacing="0.08em">
+      .ORG
+    </text>
+  </g>
+
+  <!-- Subtitle Tagline -->
+  <text x="63" y="47" font-family="'JetBrains Mono', monospace" font-weight="500" font-size="9" fill="#94A3B8" letter-spacing="0.12em">
+    BA &amp; FULL-STACK TECH
+  </text>
+</svg>
