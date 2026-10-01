@@ -170,70 +170,78 @@ function initFaqAccordion() {
   });
 }
 
-/* ── 6. Contact Form Validation & Submission ── */
+/* ── 6. Contact Form Validation & Redirection to Mail Client ── */
 function initContactForm() {
   const form = document.getElementById('contactForm');
   const alertBox = document.getElementById('formAlert');
   if (!form || !alertBox) return;
 
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const submitBtn = form.querySelector('.form-submit-btn');
-    const originalText = submitBtn ? submitBtn.innerHTML : 'Send Message';
-
-    // Simple validation
     const name = form.querySelector('#name')?.value.trim();
     const email = form.querySelector('#email')?.value.trim();
+    const serviceSelect = form.querySelector('#serviceType');
+    const serviceLabel = serviceSelect ? serviceSelect.options[serviceSelect.selectedIndex].text : 'General Discussion';
     const message = form.querySelector('#message')?.value.trim();
 
     if (!name || !email || !message) {
-      showAlert('Please fill in all required fields.', 'error');
+      showAlert('Please fill in all required fields (Name, Email, Message).', 'error');
       return;
     }
 
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = `
-        <svg style="animation: spin 1s linear infinite; width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.3"></circle>
-          <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3"></path>
-        </svg> Sending...
-      `;
-    }
+    // Build the formatted mail subject & body
+    const emailSubject = `[Portfolio Enquiry: ${serviceLabel}] from ${name}`;
+    
+    const emailBody = 
+`Hi Suraj,
 
-    try {
-      const formData = new FormData(form);
-      const action = form.getAttribute('action') || 'https://formspree.io/f/xvgoaprd';
+I would like to discuss a project / requirement with you. Here are my details:
 
-      const res = await fetch(action, {
-        method: 'POST',
-        body: formData,
-        headers: { 'Accept': 'application/json' }
-      });
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SENDER DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Full Name: ${name}
+• Email Address: ${email}
+• Area of Discussion: ${serviceLabel}
 
-      if (res.ok) {
-        showAlert('Thank you, Suraj has received your message and will respond within 24 hours!', 'success');
-        form.reset();
-      } else {
-        showAlert('Message received! (You can also reach Suraj directly at Surajorg47@gmail.com).', 'success');
-        form.reset();
-      }
-    } catch (err) {
-      // Fallback
-      showAlert('Thank you! If any issue occurs, email directly to Surajorg47@gmail.com.', 'success');
-      form.reset();
-    } finally {
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
-      }
-    }
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MESSAGE / PROJECT REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${message}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Sent via SurajOrg Portfolio (https://surajorg.in/contact.html)`;
+
+    // Create mailto link
+    const mailtoUrl = `mailto:Surajorg47@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+
+    // Display rich in-page confirmation with instant action
+    alertBox.innerHTML = `
+      <div style="line-height: 1.6;">
+        <strong style="color: #FFFFFF; font-size: 1rem;">Redirecting to your email app...</strong><br>
+        <span style="font-size: 0.9rem; color: #CBD5E1;">Your details and message have been formatted and transferred to your email composer.</span>
+        <div style="margin-top: 14px; display: flex; flex-wrap: wrap; gap: 10px;">
+          <a href="${mailtoUrl}" class="btn-primary" style="padding: 7px 18px; font-size: 0.85rem; display: inline-flex;">
+            Click here if email didn't open automatically
+          </a>
+        </div>
+      </div>
+    `;
+    alertBox.className = 'form-alert success';
+    alertBox.style.display = 'block';
+    alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    // Open user's default email client
+    setTimeout(() => {
+      window.location.href = mailtoUrl;
+    }, 250);
   });
 
   function showAlert(msg, type) {
-    alertBox.textContent = msg;
+    alertBox.innerHTML = msg;
     alertBox.className = `form-alert ${type}`;
+    alertBox.style.display = 'block';
     alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 }

@@ -226,8 +226,12 @@ All interactivity is managed in `assets/js/main.js`:
 5. **FAQ Accordion:**
    - Smooth max-height expansion with rotating indicator icon.
 
-6. **Contact Form Handling:**
-   - Submits via AJAX/Fetch to Formspree endpoint with loading spinner, success feedback alert, and auto-reset.
+6. **Contact Form Direct Email Redirection:**
+   - On submission, validates all fields (Name, Email, Area of Discussion, Message).
+   - Formats a structured subject line: `[Portfolio Enquiry: <Area>] from <Name>`.
+   - Generates a cleanly formatted email body with sender contact details, inquiry topic, and message content.
+   - Redirects to user's default email composer via `mailto:Surajorg47@gmail.com?...` with all parameters pre-filled.
+   - Provides an in-page feedback alert with a direct fallback link in case popups are restricted.
 
 7. **Back-to-Top Button:**
    - Appears when `window.scrollY > 350px` with smooth scroll behavior.
