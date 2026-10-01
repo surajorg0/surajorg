@@ -170,11 +170,19 @@ function initFaqAccordion() {
   });
 }
 
-/* ── 6. Contact Form Validation & Redirection to Mail Client ── */
+/* ── 6. Contact Form: Mobile vs Desktop Detection & Email Redirection ── */
 function initContactForm() {
   const form = document.getElementById('contactForm');
   const alertBox = document.getElementById('formAlert');
   if (!form || !alertBox) return;
+
+  function isMobileDevice() {
+    const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+    const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    const isTouchScreen = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    const isSmallScreen = window.innerWidth <= 820;
+    return isMobileUA || (isTouchScreen && isSmallScreen);
+  }
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -190,7 +198,7 @@ function initContactForm() {
       return;
     }
 
-    // Build the formatted mail subject & body
+    // Structured subject & body
     const emailSubject = `[Portfolio Enquiry: ${serviceLabel}] from ${name}`;
     
     const emailBody = 
@@ -213,29 +221,68 @@ ${message}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Sent via SurajOrg Portfolio (https://surajorg.in/contact.html)`;
 
-    // Create mailto link
-    const mailtoUrl = `mailto:Surajorg47@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+    // Encode parameters
+    const encodedSubject = encodeURIComponent(emailSubject);
+    const encodedBody = encodeURIComponent(emailBody);
 
-    // Display rich in-page confirmation with instant action
-    alertBox.innerHTML = `
-      <div style="line-height: 1.6;">
-        <strong style="color: #FFFFFF; font-size: 1rem;">Redirecting to your email app...</strong><br>
-        <span style="font-size: 0.9rem; color: #CBD5E1;">Your details and message have been formatted and transferred to your email composer.</span>
-        <div style="margin-top: 14px; display: flex; flex-wrap: wrap; gap: 10px;">
-          <a href="${mailtoUrl}" class="btn-primary" style="padding: 7px 18px; font-size: 0.85rem; display: inline-flex;">
-            Click here if email didn't open automatically
-          </a>
+    // Desktop Webmail URLs (Opens inside browser without blank tabs)
+    const gmailWebUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=Surajorg47@gmail.com&su=${encodedSubject}&body=${encodedBody}`;
+    const outlookWebUrl = `https://outlook.live.com/mail/0/deeplink/compose?to=Surajorg47@gmail.com&subject=${encodedSubject}&body=${encodedBody}`;
+    const mailtoUrl = `mailto:Surajorg47@gmail.com?subject=${encodedSubject}&body=${encodedBody}`;
+
+    const isMobile = isMobileDevice();
+
+    if (isMobile) {
+      // ── MOBILE FLOW: Trigger native app selector (Gmail app / system mail apps) ──
+      alertBox.innerHTML = `
+        <div style="line-height: 1.6;">
+          <strong style="color: #FFFFFF; font-size: 1rem;">Opening in your email app...</strong><br>
+          <span style="font-size: 0.9rem; color: #CBD5E1;">Select Gmail or your preferred email application from the prompt.</span>
+          <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 10px;">
+            <a href="${mailtoUrl}" class="btn-primary" style="justify-content: center; padding: 10px 18px; font-size: 0.9rem;">
+              Open in Gmail / Mail App
+            </a>
+            <a href="${gmailWebUrl}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="justify-content: center; padding: 10px 18px; font-size: 0.9rem;">
+              Open in Web Browser Gmail
+            </a>
+          </div>
         </div>
-      </div>
-    `;
-    alertBox.className = 'form-alert success';
-    alertBox.style.display = 'block';
-    alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      `;
+      alertBox.className = 'form-alert success';
+      alertBox.style.display = 'block';
+      alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-    // Open user's default email client
-    setTimeout(() => {
-      window.location.href = mailtoUrl;
-    }, 250);
+      // Trigger native system app chooser
+      setTimeout(() => {
+        window.location.href = mailtoUrl;
+      }, 250);
+
+    } else {
+      // ── DESKTOP PC FLOW: Open Gmail compose directly inside browser ──
+      alertBox.innerHTML = `
+        <div style="line-height: 1.6;">
+          <strong style="color: #FFFFFF; font-size: 1rem;">Opening Gmail in your browser...</strong><br>
+          <span style="font-size: 0.9rem; color: #CBD5E1;">Your inquiry details have been formatted and loaded into Gmail compose.</span>
+          <div style="margin-top: 14px; display: flex; flex-wrap: wrap; gap: 10px;">
+            <a href="${gmailWebUrl}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="padding: 8px 18px; font-size: 0.88rem; display: inline-flex;">
+              Open in Gmail Web
+            </a>
+            <a href="${outlookWebUrl}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="padding: 8px 18px; font-size: 0.88rem; display: inline-flex;">
+              Open in Outlook Web
+            </a>
+            <a href="${mailtoUrl}" class="btn-secondary" style="padding: 8px 18px; font-size: 0.88rem; display: inline-flex;">
+              Default Desktop App
+            </a>
+          </div>
+        </div>
+      `;
+      alertBox.className = 'form-alert success';
+      alertBox.style.display = 'block';
+      alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      // Open Gmail directly in browser
+      window.open(gmailWebUrl, '_blank');
+    }
   });
 
   function showAlert(msg, type) {

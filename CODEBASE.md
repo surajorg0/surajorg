@@ -226,12 +226,11 @@ All interactivity is managed in `assets/js/main.js`:
 5. **FAQ Accordion:**
    - Smooth max-height expansion with rotating indicator icon.
 
-6. **Contact Form Direct Email Redirection:**
-   - On submission, validates all fields (Name, Email, Area of Discussion, Message).
-   - Formats a structured subject line: `[Portfolio Enquiry: <Area>] from <Name>`.
-   - Generates a cleanly formatted email body with sender contact details, inquiry topic, and message content.
-   - Redirects to user's default email composer via `mailto:Surajorg47@gmail.com?...` with all parameters pre-filled.
-   - Provides an in-page feedback alert with a direct fallback link in case popups are restricted.
+6. **Smart Device-Aware Email Dispatch (PC vs Mobile):**
+   - Automatically detects whether the visitor is on **Desktop PC Web** or a **Mobile Device** (via User Agent, Touch Points, and Viewport heuristics).
+   - **On Desktop PC Web:** Directly opens **Gmail Web Compose** inside the browser (`https://mail.google.com/mail/?view=cm&fs=1&to=Surajorg47@gmail.com&su=...&body=...`) with recipient, subject, and formatted body populated—eliminating blank Chrome tabs or missing desktop client errors. Also provides buttons for Outlook Web and system default.
+   - **On Mobile Devices (Android / iOS):** Automatically triggers native system protocol (`mailto:Surajorg47@gmail.com?...`) which pops up the OS app selector (Gmail App, Samsung Mail, Apple Mail), with touch-optimized fallback options.
+   - Validates all input fields (Name, Email, Area of Discussion, Message) and formats a structured summary with headers and line dividers.
 
 7. **Back-to-Top Button:**
    - Appears when `window.scrollY > 350px` with smooth scroll behavior.
