@@ -27,3 +27,7 @@ build/
 # IDE
 .vscode/
 *.swp
+
+# Root GLB archives (assets/models/luca_1k.glb is the active production model)
+/*.glb
+assets/models/luca_paguro.glb

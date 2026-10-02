@@ -313,28 +313,34 @@ button, input, textarea, select {
   display: block;
 }
 
-/* Mobile Drawer */
+/* Mobile Drawer (Only active on mobile screens) */
 .mobile-drawer {
-  position: fixed;
-  top: var(--nav-height);
-  left: 0;
-  width: 100%;
-  height: calc(100vh - var(--nav-height));
-  background: rgba(11, 17, 32, 0.98);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  transform: translateX(100%);
-  transition: transform var(--transition-slow);
-  z-index: 998;
-  border-top: 1px solid var(--border-subtle);
+  display: none;
 }
 
-.mobile-drawer.open {
-  transform: translateX(0);
+@media (max-width: 900px) {
+  .mobile-drawer {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    width: 100%;
+    height: calc(100vh - var(--nav-height));
+    background: rgba(11, 17, 32, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transform: translateX(100%);
+    transition: transform var(--transition-slow);
+    z-index: 998;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .mobile-drawer.open {
+    transform: translateX(0);
+  }
 }
 
 .mobile-nav-link {
@@ -527,6 +533,11 @@ button, input, textarea, select {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 600;
+}
+
+/* Mobile character slot is hidden on desktop */
+.hero-mobile-character-slot {
+  display: none;
 }
 
 /* Hero Visual / Avatar Card */
@@ -1478,7 +1489,36 @@ textarea.form-control {
   }
 
   .hero-visual {
-    margin-top: 20px;
+    margin-top: 0;
+  }
+
+  /* Mobile 3D Character Staging Slot (between name and description) */
+  .hero-mobile-character-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    height: 300px;
+    margin: 24px auto 28px;
+    pointer-events: none;
+  }
+
+  .hero-mobile-character-slot .hero-mascot-base-glow {
+    position: absolute;
+    bottom: 8px;
+    width: 180px;
+    height: 38px;
+    background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.3) 0%, rgba(37, 99, 235, 0.1) 50%, transparent 80%);
+    border-radius: 50%;
+    filter: blur(12px);
+    animation: pulseBase 3.5s ease-in-out infinite alternate;
+  }
+
+  /* On mobile, hide the desktop right-column visual area */
+  .hero-visual-open {
+    display: none;
   }
 
   .bio-grid {
@@ -1553,4 +1593,54 @@ textarea.form-control {
     width: 20px;
     height: 20px;
   }
+}
+
+/* ── 15. Full-Site Independent 3D Luca Character ── */
+.luca-full-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 10;
+  display: block;
+}
+
+/* Open Hero Staging (Unboxed & Full Size) */
+.hero-visual-open {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 480px;
+  width: 100%;
+}
+
+.hero-mascot-base-glow {
+  position: absolute;
+  bottom: 20px;
+  width: 260px;
+  height: 60px;
+  background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.25) 0%, rgba(37, 99, 235, 0.1) 50%, transparent 80%);
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(14px);
+  animation: pulseBase 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulseBase {
+  from { transform: scale(0.88); opacity: 0.6; }
+  to { transform: scale(1.15); opacity: 1; }
+}
+
+/* Ensure all interactive content sits safely above the transparent 3D canvas */
+.site-header,
+.hero-content,
+.section,
+.cards-grid,
+.interactive-card,
+.footer {
+  position: relative;
+  z-index: 20;
 }

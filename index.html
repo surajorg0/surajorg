@@ -37,7 +37,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/main.css?v=3.1">
 
   <!-- Structured Data JSON-LD -->
   <script type="application/ld+json">
@@ -83,6 +83,9 @@
   </script>
 </head>
 <body>
+  <!-- Full-Site Independent 3D WebGL Canvas (No Boxes / Containers) -->
+  <canvas id="luca-world-canvas" class="luca-full-canvas"></canvas>
+
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
   <!-- ── Global Header & Navigation ── -->
@@ -136,10 +139,14 @@
             <span>Available for BA &amp; Tech Opportunities</span>
           </div>
 
-          <!-- Fixed High-Contrast Heading with Fully Visible Choudhari -->
           <h1 class="hero-heading">
             Hi, I'm Suraj <span class="hero-name-accent">Choudhari</span>
           </h1>
+
+          <!-- Mobile Character Slot (Only shown on mobile between name and description) -->
+          <div class="hero-mobile-character-slot" id="hero-mobile-slot" aria-hidden="true">
+            <div class="hero-mascot-base-glow"></div>
+          </div>
 
           <p class="hero-subhead">
             <strong>Business Analyst &amp; Full-Stack Developer</strong> based in Jalna, Maharashtra.
@@ -183,87 +190,9 @@
           </div>
         </div>
 
-        <!-- Hero Card & Photo -->
-        <div class="hero-visual">
-          <div class="hero-card-frame">
-            <!-- Floating Badge Top -->
-            <div class="floating-tech-badge badge-top-left">
-              <div class="badge-icon-box">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
-              </div>
-              <div>
-                <div class="badge-text-title">BRD &amp; Wireframing</div>
-                <div class="badge-text-desc">Client Signoffs &amp; Specs</div>
-              </div>
-            </div>
-
-            <!-- Tech Architecture Console (Privacy-Protected & High-Tech) -->
-            <div class="hero-tech-console">
-              <div class="console-header">
-                <div class="console-dots">
-                  <span class="console-dot red"></span>
-                  <span class="console-dot yellow"></span>
-                  <span class="console-dot green"></span>
-                </div>
-                <div class="console-title">suraj.architect.ts</div>
-              </div>
-              <div class="console-body">
-                <pre><code><span class="code-keyword">const</span> <span class="code-var">profile</span> = {
-  <span class="code-prop">name</span>: <span class="code-str">"Suraj Choudhari"</span>,
-  <span class="code-prop">role</span>: <span class="code-str">"Business Analyst"</span>,
-  <span class="code-prop">company</span>: <span class="code-str">"MSquare Software"</span>,
-  <span class="code-prop">education</span>: <span class="code-str">"M.Sc. IT (2024)"</span>,
-  <span class="code-prop">deliverables</span>: [
-    <span class="code-str">"BRD &amp; User Stories"</span>,
-    <span class="code-str">"Wireframes &amp; Flows"</span>,
-    <span class="code-str">"Full-Stack Prototypes"</span>
-  ],
-  <span class="code-prop">stack</span>: [<span class="code-str">"Angular"</span>, <span class="code-str">"Ionic"</span>, <span class="code-str">"Python"</span>],
-  <span class="code-prop">status</span>: <span class="code-str">"Available for Hire"</span>
-};</code></pre>
-              </div>
-            </div>
-
-            <!-- Floating Badge Bottom -->
-            <div class="floating-tech-badge badge-bottom-right">
-              <div class="badge-icon-box" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald);">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="16 18 22 12 16 6"></polyline>
-                  <polyline points="8 6 2 12 8 18"></polyline>
-                </svg>
-              </div>
-              <div>
-                <div class="badge-text-title">Full-Stack Tech</div>
-                <div class="badge-text-desc">Angular · Ionic · Python</div>
-              </div>
-            </div>
-
-            <div class="hero-card-footer">
-              <div class="hero-identity">
-                <h3>Suraj Choudhari</h3>
-                <p>MSquare Software Systems</p>
-              </div>
-              <div class="hero-social-mini">
-                <a href="https://github.com/surajorg0" target="_blank" rel="noopener noreferrer" class="mini-social-btn" aria-label="GitHub Profile">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                  </svg>
-                </a>
-                <a href="mailto:Surajorg47@gmail.com" class="mini-social-btn" aria-label="Send Email">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                    <polyline points="22,6 12,13 2,6"></polyline>
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </div>
+        <!-- Hero Visual Area (Desktop Staging) -->
+        <div class="hero-visual hero-visual-open" id="hero-desktop-slot">
+          <div class="hero-mascot-base-glow"></div>
         </div>
       </div>
     </section>
@@ -558,5 +487,8 @@
   </button>
 
   <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/vendor/three.min.js"></script>
+  <script src="/assets/js/vendor/GLTFLoader.umd.js"></script>
+  <script src="/assets/js/3d-scene.js?v=3.1"></script>
 </body>
 </html>

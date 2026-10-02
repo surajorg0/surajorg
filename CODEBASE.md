@@ -23,6 +23,7 @@
 9. [Local Development & Testing](#9-local-development--testing)
 10. [Deployment & Vercel Integration](#10-deployment--vercel-integration)
 11. [Maintenance & Content Editing Guide](#11-maintenance--content-editing-guide)
+12. [3D Mascot Architecture (Fixed Body · Head-Only Gaze Tracking)](#12-3d-mascot-architecture-fixed-body--head-only-gaze-tracking)
 
 ---
 
@@ -45,7 +46,9 @@ The SurajOrg web application is the official personal and professional portfolio
 surajorg/
 ├── CODEBASE.md                     # Comprehensive technical documentation (this file)
 ├── Suraj_Choudhari_Profile.md      # Ground truth profile, career history & raw details
-├── index.html                      # Home / Executive landing page
+├── luca_paguro_from_luca__disney_original 1k texture.glb # 1K texture GLTF asset (root source)
+├── luca_paguro_from_luca__disney_original.glb            # Original 4K GLTF asset archive
+├── index.html                      # Home landing page (with unboxed full-size 3D Mascot & Global Scroll)
 ├── about.html                      # About Suraj, education table, certifications, hobbies
 ├── projects.html                   # Interactive project catalog with category filters
 ├── experience.html                 # Professional experience, MSquare products & BA methodology
@@ -54,9 +57,16 @@ surajorg/
 ├── sitemap.xml                     # Search engine XML index for all 5 routes
 └── assets/
     ├── css/
-    │   └── main.css                # Central design system, tokens, layouts, responsive rules
+    │   └── main.css                # Central design system, tokens, layouts, full-canvas 3D styling
     ├── js/
-    │   └── main.js                 # Multi-page interactive engine (spotlight, filters, drawer)
+    │   ├── main.js                 # Multi-page interactive engine (spotlight, filters, drawer)
+    │   ├── 3d-scene.js             # Three.js 3D character engine (cursor tracking & whole-site scroll)
+    │   └── vendor/
+    │       ├── three.min.js        # Three.js r128 UMD standalone build
+    │       └── GLTFLoader.umd.js   # Three.js official GLTFLoader UMD standalone build
+    ├── models/
+    │   ├── luca_1k.glb             # 1K texture high-performance model (~41 MB)
+    │   └── luca_paguro.glb         # Active production 3D asset copy (~41 MB)
     ├── downloads/
     │   └── (Resume and document assets)
     └── images/
@@ -322,3 +332,28 @@ git push origin master
 1. Open `contact.html`.
 2. Locate `<form id="contactForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">`.
 3. Replace the `action` attribute with your custom Formspree or serverless endpoint.
+
+---
+
+## 12. 3D Mascot Architecture (Fixed Hero Staging · Dual-Mode Desktop/Mobile · Interactive Gaze & Reach)
+
+### 12.1 Overview & Architecture Summary
+An interactive, unboxed 3D character engine built with **Three.js** is integrated seamlessly into `index.html`. Luca Paguro stands **in full size directly on the website canvas** (`#luca-world-canvas`) in a full-viewport fixed layer (`position: fixed; inset: 0; pointer-events: none`).
+1. **Desktop Staging (> 1024px):** Fixed grounded placement on the right side of the Hero section (`posX = 3.25`, `posY = -1.15`, `posZ = 0`) at full size (`scale ~ 0.733`), leaving the text layout completely unhindered.
+2. **Mobile Staging (≤ 1024px):** Dedicated staging slot (`#hero-mobile-slot`) positioned between the Name heading and the intro description. Luca is dynamically anchored with closed-loop runtime feedback, locking his head safely below `"Choudhari"` and his feet above the description with a radiant ground glow base.
+3. **Head & Neck Cursor Gaze Tracking:** As the visitor moves their mouse or touch across the screen, Luca's head and neck move smoothly to track the cursor across both horizontal and vertical axes.
+4. **Nose Tip Iris Focus:** When the cursor points over or near Luca's nose, both irises converge inward toward the bridge of his nose for a playful cartoon close-up focus.
+5. **Interactive Hand Reaching:** When the cursor moves near either hand, Luca extends his arm and hand forward attempting to touch the cursor, returning smoothly to resting pose when the cursor moves away.
+6. **Scroll Fade-out:** The canvas smoothly fades out as the visitor scrolls down past the Hero section, ensuring zero obstruction of lower sections.
+
+### 12.2 Active 3D Model & Rig Details
+- **Model Title:** Luca Paguro from Luca Disney Original (1K Texture Performance Edition)
+- **Active Model File:** `assets/models/luca_1k.glb` (~41 MB, 1K optimized textures for fast GPU loading)
+- **Key Joint Mappings:**
+  - **Head:** Node 32 (`DEF-spine.006_09`) + Neck Node 31 (`DEF-spine.005_08`)
+  - **Eyes & Irises:** `EyeR.002` (viewer right) & `EyeR.003` (viewer left)
+  - **Arms & Hands:** `DEF-upper_arm.R_072`, `DEF-forearm.R_074`, `DEF-hand.R_076` (right) & `DEF-upper_arm.L_042`, `DEF-forearm.L_044`, `DEF-hand.L_046` (left)
+
+### 12.3 Deployment
+- Automated deployment on Vercel via GitHub push to `master` branch.
+- Domain configured to `surajorg.in` with automatic SSL and edge CDN caching.
